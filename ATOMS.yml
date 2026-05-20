@@ -1,0 +1,38 @@
+# ATOMS.yml — catalog manifest for persona-atoms
+#
+# See https://github.com/convergent-systems-co/atoms-spec for the canonical schema this conforms to.
+
+name: persona-atoms
+version: 0.1.0
+spec: atoms-spec/v1
+domain: persona-atoms.com
+ecosystem:
+  federation: xdao.co
+  redirect: persona.xdao.co
+
+purpose: |
+  Persona primitives for AI agents and LLMs — voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters. Composable persona designs that runtimes bind to agents, system prompts, and conversational surfaces.
+
+atomTypes:
+  - voice-profile
+  - role-definition
+  - behavioural-constraint
+  - knowledge-boundary
+  - tone-parameter
+
+compositionType: personas
+compositionDir: personas
+
+ruleTypes:
+  - prompt-conformance
+  - boundary-coverage
+  - voice-consistency
+
+runtimeConsumers:
+  - aish
+  - olympus
+
+license: Apache-2.0
+maintainers:
+  - name: Convergent Systems
+    contact: maintainers@xdao.co
