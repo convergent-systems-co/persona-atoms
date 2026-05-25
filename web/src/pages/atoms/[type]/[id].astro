@@ -1,0 +1,111 @@
+---
+import Base from "../../../layouts/Base.astro";
+import catalog from "../../../../public/exports/catalog.json";
+
+export function getStaticPaths() {
+  return catalog.atoms.map((atom: any) => ({
+    params: { type: atom.type, id: atom.id },
+    props: { atom },
+  }));
+}
+
+const { atom } = Astro.props;
+
+// Pick type-specific payload fields
+const voiceProfile = atom.voice_profile;
+const roleDefinition = atom.role_definition;
+const behaviouralConstraint = atom.behavioural_constraint;
+const knowledgeBoundary = atom.knowledge_boundary;
+const toneParameter = atom.tone_parameter;
+---
+<Base title={atom.name} description={atom.description ?? `${atom.type} atom`}>
+  <p><a href="/atoms/">← All atoms</a></p>
+  <h1>{atom.name}</h1>
+  <p style="color: var(--muted);">
+    <code>{atom.type}</code> · <code>v{atom.version}</code>
+  </p>
+
+  {atom.description && <p>{atom.description}</p>}
+
+  {atom.tags && atom.tags.length > 0 && (
+    <p>
+      Tags: {atom.tags.map((tag: string) => (
+        <span style="display: inline-block; font-size: 0.875rem; background: #f4ece4; padding: 0.125rem 0.5rem; border-radius: 0.25rem; margin-right: 0.25rem;">{tag}</span>
+      ))}
+    </p>
+  )}
+
+  {voiceProfile && (
+    <section>
+      <h2>Voice profile</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {voiceProfile.tone && (<><dt>Tone</dt><dd>{voiceProfile.tone}</dd></>)}
+        {voiceProfile.formality && (<><dt>Formality</dt><dd><code>{voiceProfile.formality}</code></dd></>)}
+        {voiceProfile.register && (<><dt>Register</dt><dd><code>{voiceProfile.register}</code></dd></>)}
+        {voiceProfile.style && (<><dt>Style</dt><dd>{voiceProfile.style}</dd></>)}
+        {voiceProfile.characteristics && voiceProfile.characteristics.length > 0 && (
+          <><dt>Characteristics</dt><dd>{voiceProfile.characteristics.join(", ")}</dd></>
+        )}
+      </dl>
+    </section>
+  )}
+
+  {roleDefinition && (
+    <section>
+      <h2>Role definition</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {roleDefinition.role && (<><dt>Role</dt><dd>{roleDefinition.role}</dd></>)}
+        {roleDefinition.purpose && (<><dt>Purpose</dt><dd>{roleDefinition.purpose}</dd></>)}
+        {roleDefinition.authority && (<><dt>Authority</dt><dd><code>{roleDefinition.authority}</code></dd></>)}
+        {roleDefinition.expertise && roleDefinition.expertise.length > 0 && (
+          <><dt>Expertise</dt><dd>{roleDefinition.expertise.join(", ")}</dd></>
+        )}
+      </dl>
+    </section>
+  )}
+
+  {behaviouralConstraint && (
+    <section>
+      <h2>Behavioural constraint</h2>
+      {behaviouralConstraint.refusals && behaviouralConstraint.refusals.length > 0 && (
+        <>
+          <h3>Refusals</h3>
+          <ul>{behaviouralConstraint.refusals.map((r: string) => <li>{r}</li>)}</ul>
+        </>
+      )}
+      {behaviouralConstraint.requirements && behaviouralConstraint.requirements.length > 0 && (
+        <>
+          <h3>Requirements</h3>
+          <ul>{behaviouralConstraint.requirements.map((r: string) => <li>{r}</li>)}</ul>
+        </>
+      )}
+      {behaviouralConstraint.escalate_to && <p>Escalate to: <code>{behaviouralConstraint.escalate_to}</code></p>}
+    </section>
+  )}
+
+  {knowledgeBoundary && (
+    <section>
+      <h2>Knowledge boundary</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {knowledgeBoundary.domains && (<><dt>Domains</dt><dd>{knowledgeBoundary.domains.join(", ")}</dd></>)}
+        {knowledgeBoundary.excluded_domains && (<><dt>Excluded</dt><dd>{knowledgeBoundary.excluded_domains.join(", ")}</dd></>)}
+        {knowledgeBoundary.cutoff && (<><dt>Cutoff</dt><dd><code>{knowledgeBoundary.cutoff}</code></dd></>)}
+      </dl>
+    </section>
+  )}
+
+  {toneParameter && (
+    <section>
+      <h2>Tone parameter</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        {toneParameter.warmth !== undefined && (<><dt>Warmth</dt><dd>{toneParameter.warmth}</dd></>)}
+        {toneParameter.directness !== undefined && (<><dt>Directness</dt><dd>{toneParameter.directness}</dd></>)}
+        {toneParameter.humour !== undefined && (<><dt>Humour</dt><dd>{toneParameter.humour}</dd></>)}
+        {toneParameter.formality !== undefined && (<><dt>Formality</dt><dd>{toneParameter.formality}</dd></>)}
+      </dl>
+    </section>
+  )}
+
+  <h2>Raw atom</h2>
+  <p><a href={`/atoms/${atom.type}/${atom.id}.json`}>/atoms/{atom.type}/{atom.id}.json</a> · <a href="/schemas/atom-v1.json">schema</a></p>
+</Base>

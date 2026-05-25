@@ -1,0 +1,39 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="How to use" description="How to consume persona-atoms in your application.">
+  <h1>How to use persona-atoms</h1>
+
+  <h2>Read the catalog over HTTPS</h2>
+  <p>Every artifact is served under stable URLs with correct content-types:</p>
+  <pre><code>curl https://persona-atoms.com/exports/catalog.json
+curl https://persona-atoms.com/atoms/voice-profile/warm-professional.json
+curl https://persona-atoms.com/personas/customer-support-agent.json
+curl https://persona-atoms.com/schemas/composition-v1.json</code></pre>
+
+  <h2>Resolve a persona composition</h2>
+  <p>A persona composition lists references to atoms by URI and version. To instantiate the persona,
+  fetch each referenced atom and assemble: voice profile → role definition → behavioural constraints → knowledge boundaries → tone parameters.</p>
+
+  <pre><code>{`// pseudo-code
+const composition = await fetch("/personas/customer-support-agent.json").then(r => r.json());
+const refs = composition.references;
+const voiceProfile = await fetch(uriToUrl(refs.voice_profile.ref)).then(r => r.json());
+const roleDefinition = await fetch(uriToUrl(refs.role_definition.ref)).then(r => r.json());
+const constraints = await Promise.all(
+  (refs.behavioural_constraints ?? []).map(r => fetch(uriToUrl(r.ref)).then(r => r.json()))
+);
+const toneParams = await fetch(uriToUrl(refs.tone_parameter.ref)).then(r => r.json());
+const systemPrompt = compilePersona({ voiceProfile, roleDefinition, constraints, toneParams });`}</code></pre>
+
+  <h2>Compatibility rules</h2>
+  <p>Rules in <a href="/exports/catalog.json"><code>/exports/catalog.json</code></a> (under the <code>rules</code>
+  key) declare predicates over atoms. Example: a <code>prompt-conformance</code> rule may require that a
+  <code>voice-profile</code> and <code>tone-parameter</code> do not conflict on formality levels. A composition
+  that violates a <code>require</code>-effect rule is malformed.</p>
+
+  <h2>Runtime binding</h2>
+  <p>persona-atoms ships the catalog and its JSON Schema. Runtime adapters that translate persona compositions
+  into system prompts for specific runtimes (aish, Olympus, AutoGen) are available separately — they bind
+  voice-profile atoms to tone directives and role-definition atoms to capability grants.</p>
+</Base>
