@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/voice-profile-v1.json",
+  "title": "persona-atoms v1 voice-profile atom",
+  "description": "Sentence-level voice characteristics for a persona: formality register, hedging tolerance, sentence-length preference, and lexical domain. These parameters govern the surface form of generated text without constraining its content.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "formality",
+    "hedging_tolerance",
+    "sentence_length_preference"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/voice-profile-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "voice-profile"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the voice-profile atom type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "formality": {
+      "type": "string",
+      "enum": ["formal", "professional", "conversational", "casual", "informal"],
+      "description": "Overall register. 'formal' uses elevated diction and avoids contractions. 'informal' uses colloquialisms freely."
+    },
+    "hedging_tolerance": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "How much epistemic hedging ('might', 'could', 'arguably') is acceptable. Low = make direct claims; High = surface uncertainty explicitly."
+    },
+    "sentence_length_preference": {
+      "type": "string",
+      "enum": ["short", "medium", "long", "varied"],
+      "description": "Preferred sentence length. 'varied' allows the writer to mix for rhythm."
+    },
+    "vocabulary_domain": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true,
+      "description": "Lexical domains the voice draws from (e.g. 'engineering', 'academic', 'conversational')."
+    },
+    "avoids": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+      "uniqueItems": true,
+      "description": "Phrases, constructions, or patterns this voice profile explicitly avoids."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true,
+      "description": "LLM families this voice profile is known to work well with."
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

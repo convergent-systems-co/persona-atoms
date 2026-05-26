@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/behavioural-constraint-v1.json",
+  "title": "persona-atoms v1 behavioural-constraint atom",
+  "description": "A hard rule the persona always obeys, regardless of user instruction. Behavioural constraints are non-negotiable by design — they define the floor of the persona's behaviour, not a preference. Examples: no-fabrication, always-cite-sources, refuse-medical-advice, disclose-AI-status.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "constraint_text",
+    "effect"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/behavioural-constraint-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "behavioural-constraint"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the behavioural-constraint atom type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "constraint_text": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1000,
+      "description": "The constraint expressed as a system-prompt directive. Must be a complete, self-contained instruction renderable into a system prompt without additional context."
+    },
+    "effect": {
+      "type": "string",
+      "enum": ["require", "forbid", "warn"],
+      "description": "require = persona must do this; forbid = persona must never do this; warn = persona surfaces a caveat when the situation arises."
+    },
+    "rationale": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Why this constraint exists. Documents the reasoning so future maintainers understand its purpose."
+    },
+    "applies_to": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["all-turns", "user-turn", "tool-turn", "assistant-turn"]
+      },
+      "uniqueItems": true,
+      "description": "Which turns this constraint applies to. Defaults to all-turns if omitted."
+    },
+    "overridable": {
+      "type": "boolean",
+      "description": "If false, this constraint MUST NOT be relaxed by a composition or runtime instruction. Defaults to false.",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
