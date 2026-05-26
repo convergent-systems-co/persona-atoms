@@ -1,0 +1,18 @@
+{
+  "id": "persona-atoms/persona/none",
+  "type": "persona",
+  "version": "1.0.0",
+  "name": "None",
+  "description": "No interpretive lens applied. Raw capability output passes through unchanged.",
+  "lens_function": "identity",
+  "min_policy_floor": "none",
+  "model_affinity": [],
+  "system_prompt_header": "[No persona active. Output is unframed capability.]",
+  "tags": ["identity", "passthrough", "default"],
+  "lifecycle": "draft",
+  "provenance": {
+    "source": "convergent-systems-co",
+    "addedAt": "2026-05-26T00:00:00Z"
+  },
+  "license": "Apache-2.0"
+}
