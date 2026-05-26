@@ -4,7 +4,7 @@ const title = "persona-atoms";
 const tagline = "Voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters for AI personas.";
 const counts = { atoms: catalog.atoms.length, compositions: catalog.compositions.length, rules: catalog.rules.length };
 const byType: Record<string, number> = {};
-for (const a of catalog.atoms) byType[a.type] = (byType[a.type] ?? 0) + 1;
+for (const a of (catalog.atoms as Array<{type: string}>)) byType[a.type] = (byType[a.type] ?? 0) + 1;
 ---
 <!doctype html>
 <html lang="en">
