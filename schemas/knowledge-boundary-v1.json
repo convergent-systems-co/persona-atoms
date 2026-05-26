@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/knowledge-boundary-v1.json",
+  "title": "persona-atoms v1 knowledge-boundary atom",
+  "description": "Declares what a persona knows and does not know. A persona with no knowledge-boundary is not a valid persona — 'unbounded' is not a coherent identity. Boundaries include: domain expertise, deliberately-omitted topics, training-cutoff acknowledgments, and access-level restrictions.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "boundary_type",
+    "boundary_text"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/knowledge-boundary-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "knowledge-boundary"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the knowledge-boundary atom type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "boundary_type": {
+      "type": "string",
+      "enum": [
+        "domain-expertise",
+        "omitted-topic",
+        "cutoff-date",
+        "access-restriction",
+        "scope-limit"
+      ],
+      "description": "Classifies what kind of boundary this is. domain-expertise = the persona knows this domain well. omitted-topic = persona declines questions in this area. cutoff-date = knowledge ends at a point in time. access-restriction = persona lacks access to certain systems or data. scope-limit = persona restricts itself to a defined scope."
+    },
+    "boundary_text": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1000,
+      "description": "The boundary expressed as a system-prompt directive. Must be renderable into a system prompt without additional context."
+    },
+    "covered_domains": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+      "uniqueItems": true,
+      "description": "For boundary_type=domain-expertise: the domains this persona has strong knowledge of."
+    },
+    "excluded_domains": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 },
+      "uniqueItems": true,
+      "description": "For boundary_type=omitted-topic or scope-limit: domains this persona refuses or defers."
+    },
+    "cutoff_date": {
+      "type": "string",
+      "format": "date",
+      "description": "For boundary_type=cutoff-date: the ISO 8601 date after which the persona declares uncertainty."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
