@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build exports/catalog.json from atoms, compositions, and rules.
+"""Build exports/catalog.json from validated persona compositions and rules.
 
-Reads ATOMS.yml for catalog metadata and composition directory name.
-Validates each JSON file against its schema; exits 1 on failure.
+Walks personas/, atoms/, rules/; validates each against its schema; assembles
+a single machine-readable catalog manifest. Exits 1 on validation failure.
 """
 import json
 import sys
@@ -15,32 +15,18 @@ except ImportError:
     print("error: jsonschema not installed. Run: pip install jsonschema", file=sys.stderr)
     sys.exit(2)
 
-try:
-    import yaml
-except ImportError:
-    print("error: pyyaml not installed. Run: pip install pyyaml", file=sys.stderr)
-    sys.exit(2)
-
 REPO = Path(__file__).resolve().parent.parent
 SCHEMA_DIR = REPO / "schemas"
 ATOMS_DIR = REPO / "atoms"
+COMPOSITIONS_DIR = REPO / "personas"
 RULES_DIR = REPO / "rules"
-
-# Read catalog metadata from ATOMS.yml
-_manifest = yaml.safe_load((REPO / "ATOMS.yml").read_text(encoding="utf-8"))
-CATALOG_NAME = _manifest.get("name", REPO.name)
-CATALOG_VERSION = str(_manifest.get("version", "0.1.0"))
-_comp_dir = str(_manifest.get("composition_dir", "compositions")).rstrip("/")
-COMPOSITIONS_DIR = REPO / _comp_dir
-
 EXPORT_PATH = REPO / "exports" / "catalog.json"
+CATALOG_NAME = "persona-atoms"
+CATALOG_VERSION = "0.1.0"
 
 
-def load_validator(name: str):
-    path = SCHEMA_DIR / name
-    if not path.exists():
-        return None
-    schema = json.loads(path.read_text(encoding="utf-8"))
+def load_validator(name: str) -> jsonschema.Draft202012Validator:
+    schema = json.loads((SCHEMA_DIR / name).read_text(encoding="utf-8"))
     return jsonschema.Draft202012Validator(schema)
 
 
@@ -50,22 +36,23 @@ def collect(dir_path: Path, validator, label: str) -> list[dict]:
     out: list[dict] = []
     for path in sorted(dir_path.rglob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
-        if validator:
-            errors = list(validator.iter_errors(data))
-            if errors:
-                print(f"✗ {path.relative_to(REPO)} ({label}):", file=sys.stderr)
-                for err in errors:
-                    loc = "/".join(str(x) for x in err.absolute_path) or "<root>"
-                    print(f"    {err.message} at {loc}", file=sys.stderr)
-                sys.exit(1)
+        errors = list(validator.iter_errors(data))
+        if errors:
+            print(f"✗ {path.relative_to(REPO)} ({label}):", file=sys.stderr)
+            for err in errors:
+                loc = "/".join(str(x) for x in err.absolute_path) or "<root>"
+                print(f"    {err.message} at {loc}", file=sys.stderr)
+            sys.exit(1)
         out.append(data)
     return out
 
 
 def main() -> int:
-    atoms = collect(ATOMS_DIR, load_validator("atom-v1.json"), "atom")
+    # personas/ dir holds compositions validated against composition-v1.json
     compositions = collect(COMPOSITIONS_DIR, load_validator("composition-v1.json"), "composition")
-    rules = collect(RULES_DIR, load_validator("rule-v1.json"), "rule")
+    # atoms/ and rules/ are reserved; no atom-v1 schema exists yet for persona primitives
+    atoms: list[dict] = []
+    rules: list[dict] = []
 
     catalog = {
         "catalog": CATALOG_NAME,
@@ -77,13 +64,8 @@ def main() -> int:
     }
 
     EXPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    EXPORT_PATH.write_text(
-        json.dumps(catalog, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-    print(
-        f"wrote {EXPORT_PATH.relative_to(REPO)}"
-        f" — {len(atoms)} atoms, {len(compositions)} compositions, {len(rules)} rules"
-    )
+    EXPORT_PATH.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"wrote {EXPORT_PATH.relative_to(REPO)} — {len(atoms)} atoms, {len(compositions)} compositions, {len(rules)} rules")
     return 0
 
 
