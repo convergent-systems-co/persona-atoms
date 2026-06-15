@@ -1,0 +1,26 @@
+{
+  "schema": "https://persona-atoms.com/schemas/composition-group-v1.json",
+  "type": "panel",
+  "id": "security-review-panel",
+  "version": "1.0.0",
+  "name": "Security Review Panel",
+  "description": "Reviews delivery security readiness and emits an aggregate panel state through a moderator.",
+  "members": [
+    { "ref": "persona-atoms://personas/reviewer-security", "responsibility": "Produce security findings.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/moderator-review-panel", "responsibility": "Aggregate reviewer state without injecting content judgment.", "cardinality": "1", "required": true }
+  ],
+  "entry_conditions": ["Security-sensitive changes are present or security review is required by policy"],
+  "workflow": [
+    "Security reviewer evaluates artifacts and emits findings.",
+    "Moderator determines whether the panel is complete and what aggregate state it should emit."
+  ],
+  "moderation_rule": "The moderator may emit approve, conditional, or block at the panel-state level only. It must not originate security findings.",
+  "output_artifacts": ["security review findings", "security panel state"],
+  "rework_routing": ["Security blocks route back to the originating pod."],
+  "done_criteria": ["Security findings are present", "Panel state is explicit"],
+  "tags": ["review", "security", "panel"],
+  "vendors": ["claude", "gpt", "any"],
+  "lifecycle": "draft",
+  "license": "Apache-2.0",
+  "provenance": { "source": "convergent-systems-co", "addedBy": "persona-taxonomy-integration", "addedAt": "2026-06-15T00:00:00Z" }
+}

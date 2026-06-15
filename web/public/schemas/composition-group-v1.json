@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/composition-group-v1.json",
+  "title": "persona-atoms v1 multi-persona composition",
+  "description": "Defines a higher-order composition such as a review panel, delivery pod, or team. A group composition coordinates multiple personas or nested compositions into a reusable operating unit.",
+  "type": "object",
+  "required": [
+    "schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "members",
+    "workflow",
+    "done_criteria"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/composition-group-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["panel", "pod", "team"]
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["ref", "responsibility", "cardinality"],
+        "additionalProperties": false,
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^persona-atoms://(personas|compositions)/[a-z0-9-]+$"
+          },
+          "responsibility": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "cardinality": {
+            "type": "string",
+            "enum": ["1", "0..1", "1..N", "0..N"]
+          },
+          "required": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "entry_conditions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "uniqueItems": true
+    },
+    "workflow": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    },
+    "handoff_rules": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+    },
+    "moderation_rule": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "uniqueItems": true
+    },
+    "rework_routing": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+    },
+    "done_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["draft", "stable", "deprecated", "archived"],
+      "default": "draft"
+    },
+    "license": {
+      "type": "string",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

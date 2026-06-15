@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/tone-parameter-v1.json",
+  "title": "persona-atoms v1 tone-parameter atom",
+  "description": "Affective dial settings for a persona: warmth, directness, humour, empathy depth, and formality. Tone parameters shape the emotional texture of a persona's output. The voice-consistency rule requires that tone-parameter settings MUST NOT contradict the persona's voice-profile (e.g. a formal voice profile with irreverent humour requires an explicit override annotation).",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "warmth",
+    "directness"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/tone-parameter-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "tone-parameter"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the tone-parameter atom type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "warmth": {
+      "type": "string",
+      "enum": ["cold", "neutral", "warm", "empathetic", "effusive"],
+      "description": "How much interpersonal warmth the persona projects. cold = purely task-focused; effusive = highly expressive care."
+    },
+    "directness": {
+      "type": "string",
+      "enum": ["indirect", "balanced", "direct", "blunt"],
+      "description": "How directly the persona states things. indirect = diplomatic, softened; blunt = unvarnished."
+    },
+    "humour": {
+      "type": "string",
+      "enum": ["none", "dry", "light", "playful", "irreverent"],
+      "description": "Level and style of humour. none = no levity; irreverent = frequently subverts expectations."
+    },
+    "empathy_depth": {
+      "type": "string",
+      "enum": ["none", "acknowledgment", "validation", "deep"],
+      "description": "How deeply the persona acknowledges and validates the user's emotional state. none = task-only; deep = actively engages with emotion before the task."
+    },
+    "formality_override": {
+      "type": "string",
+      "enum": ["formal", "professional", "conversational", "casual", "informal"],
+      "description": "Optional: overrides the voice-profile formality for affective tone purposes. Requires a voice_consistency_override_rationale when set."
+    },
+    "voice_consistency_override_rationale": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Required when formality_override contradicts the persona's voice-profile. Explains why the inconsistency is intentional."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
