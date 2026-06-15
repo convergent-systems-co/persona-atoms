@@ -337,7 +337,274 @@ Tag `v0.1.0`. The `publish.yml` workflow generates signed exports, creates a Git
 
 The catalog is now part of the ecosystem.
 
+---
 
+## persona-atoms vX.X.X — Personas, Panels, and Teams
+
+This section defines the next intended model for `persona-atoms`. It extends the
+current catalog from "single persona compositions" toward a layered system of
+personas, panels, pods, and teams.
+
+### Core model
+
+The catalog currently treats a persona as a composition of:
+
+- `role-definition`
+- `voice-profile`
+- `behavioural-constraint`
+- `knowledge-boundary`
+- `tone-parameter`
+
+That remains valid, but it is no longer sufficient for agentic delivery
+systems. The next model distinguishes between:
+
+| Layer | Purpose | Example |
+|-------|---------|---------|
+| `persona` | One agent identity | `planner-tech-lead` |
+| `work_contract` | How a persona participates in work | planner contract, reviewer contract |
+| `composition` | A reusable multi-persona unit | `development-pod` |
+| `team` | A higher-level orchestration composition | `development-team` |
+
+### Definitions
+
+#### Persona
+
+A **persona** is a single agent identity with a class, domain, voice,
+boundaries, and behavioral rules.
+
+#### Work contract
+
+A **work contract** defines how a persona works, not who it is. It specifies:
+
+- inputs
+- goal
+- allowed actions
+- forbidden actions
+- output artifacts
+- escalation triggers
+- done criteria
+
+`role-definition` remains the identity anchor. `work_contract` is the execution
+contract.
+
+#### Composition
+
+A **composition** is a reusable collaboration unit made of multiple personas.
+Compositions may be delivery-oriented, review-oriented, or orchestration-
+oriented.
+
+Examples:
+
+- `development-pod`
+- `security-review-panel`
+- `architecture-review-panel`
+- `documentation-review-panel`
+
+#### Team
+
+A **team** is a composition that orchestrates multiple lower-level
+compositions, usually with one or more coordinators and multiple pods or
+panels.
+
+### Classes
+
+The foundational classes for `persona-atoms` vX.X.X are:
+
+| Class | Purpose | Decision scope |
+|-------|---------|----------------|
+| `planner` | Plans work, decomposes scope, proposes implementation approach | planning decisions only |
+| `executor` | Produces code, tests, docs, infrastructure, or artifacts | no review decisions |
+| `reviewer` | Produces content-level findings and recommendations | content-level |
+| `moderator` | Orchestrates a review panel and emits aggregate panel state | panel/state-level only |
+| `coordinator` | Routes work across pods, panels, and teams | workflow/routing |
+| `aggregator` | Brings code, docs, reports, data, and evidence together | no decisions |
+
+### Moderator and aggregator semantics
+
+These roles are intentionally distinct.
+
+#### Reviewer
+
+A reviewer makes **content-level judgments** inside its domain.
+
+Examples:
+
+- identifying a security flaw
+- flagging a missing architectural boundary
+- rejecting inadequate documentation
+
+#### Moderator
+
+A moderator is a **review orchestrator**. It never performs substantive review
+work. It may:
+
+- collect review outputs
+- detect missing required reviews
+- identify conflicts between reviewers
+- emit aggregate panel state such as `approve`, `conditional`, or `block`
+- route rework back to the originating composition
+
+A moderator must not:
+
+- originate domain findings
+- override reviewer findings at the content level
+- inject its own security, architecture, documentation, or testing judgment
+
+#### Aggregator
+
+An aggregator performs **artifact assembly** only. It brings things together
+without judging them.
+
+Examples:
+
+- bundling code, docs, and review reports into one delivery packet
+- combining evidence across panels
+- assembling a release dossier or audit package
+
+An aggregator must not emit pass/fail decisions.
+
+### Foundation compositions
+
+The first compositions to standardize are the ones most common to agentic
+software delivery in Claude Code, Copilot, Codex, and similar runtimes.
+
+#### Development Pod
+
+A **Development Pod** is the smallest reusable delivery unit.
+
+| Member persona | Class | Role in pod |
+|----------------|-------|-------------|
+| `planner-tech-lead` | planner | decomposes work and defines delivery path |
+| `executor-coder` | executor | produces application code |
+| `executor-iac-coder` | executor | produces infrastructure code when needed |
+| `executor-tdd-test-writer` | executor | writes failing contract tests first |
+| `reviewer-adversarial-test-writer` | reviewer | probes for gaps, gaming, and weak coverage |
+| `reviewer-test-verifier` | reviewer | validates the finished implementation against the contract |
+
+Development Pod contract:
+
+- **entry:** issue, batch, or scoped work item
+- **flow:** plan -> tests -> implementation -> adversarial review -> verification
+- **exit:** implementation ready for team-level review panels
+
+#### Development Team
+
+A **Development Team** is the foundational team composition for delivery.
+
+| Member composition or persona | Function |
+|--------------------------------|----------|
+| `coordinator-devops-engineer` | routes work, manages capacity, merges delivery flow |
+| `N x development-pod` | executes implementation workstreams |
+| `executor-document-writer` | updates documentation affected by changes |
+| `documentation-review-panel` | validates documentation readiness |
+| `security-review-panel` | validates security readiness |
+| `architecture-review-panel` | validates architecture readiness |
+| `aggregator-delivery-evidence` | assembles final artifacts and evidence when required |
+
+Development Team contract:
+
+- **entry:** prioritized work queue
+- **flow:** assign work to pods, trigger required review panels, reconcile outputs
+- **exit:** reviewed, documented, validated delivery ready for merge/release
+
+### First-build inventory
+
+The first personas and compositions to add should be:
+
+| Name | Kind | Class | Domain |
+|------|------|-------|--------|
+| `planner-tech-lead` | persona | planner | engineering |
+| `executor-coder` | persona | executor | engineering |
+| `executor-iac-coder` | persona | executor | infrastructure |
+| `executor-tdd-test-writer` | persona | executor | testing |
+| `reviewer-adversarial-test-writer` | persona | reviewer | testing |
+| `reviewer-test-verifier` | persona | reviewer | testing |
+| `coordinator-devops-engineer` | persona | coordinator | delivery-platform |
+| `executor-document-writer` | persona | executor | documentation |
+| `reviewer-documentation` | persona | reviewer | documentation |
+| `reviewer-security` | persona | reviewer | security |
+| `reviewer-systems-architect` | persona | reviewer | architecture |
+| `moderator-review-panel` | persona | moderator | review-orchestration |
+| `aggregator-delivery-evidence` | persona | aggregator | delivery-evidence |
+| `development-pod` | composition | n/a | delivery |
+| `documentation-review-panel` | composition | n/a | documentation-review |
+| `security-review-panel` | composition | n/a | security-review |
+| `architecture-review-panel` | composition | n/a | architecture-review |
+| `development-team` | composition | n/a | delivery-team |
+
+### Composition contract shape
+
+Every composition should eventually declare:
+
+- required members
+- optional members
+- entry conditions
+- internal workflow
+- handoff rules
+- moderation or decision rules
+- rework routing
+- output artifacts
+- done criteria
+
+### Planned schema updates
+
+The current schema supports only persona compositions. To support the vX.X.X
+model, the catalog should add the following:
+
+#### 1. New atom type: `work-contract`
+
+Purpose:
+
+- define operational behavior for a persona
+- separate identity from execution semantics
+- allow reuse of planner, executor, reviewer, moderator, coordinator, and
+  aggregator contracts
+
+#### 2. Extend persona composition schema
+
+Likely addition to persona composition:
+
+- `work_contract`
+- optional classification metadata such as `class` and `domain`
+
+#### 3. New composition schema(s)
+
+The catalog should support higher-order compositions beyond single personas:
+
+- `panel`
+- `pod`
+- `team`
+
+These compositions should be able to declare:
+
+- member references
+- workflow ordering
+- trigger conditions
+- required vs optional reviewers
+- moderator assignment
+- output contract
+
+#### 4. Export and catalog updates
+
+The exports should eventually distinguish between:
+
+- atoms
+- persona compositions
+- higher-order compositions
+
+This allows runtimes to discover not only individual personas, but also
+reusable delivery and review topologies.
+
+### Non-goals
+
+This section does **not** yet define:
+
+- final JSON Schema field names
+- final file paths for panel or team definitions
+- runtime-specific execution engines
+- whether every domain must support every class
+
+Those remain implementation decisions for follow-up XAIPs or ADRs.
 
 ---
 

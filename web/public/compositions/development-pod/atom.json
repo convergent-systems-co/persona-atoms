@@ -1,0 +1,37 @@
+{
+  "schema": "https://persona-atoms.com/schemas/composition-group-v1.json",
+  "type": "pod",
+  "id": "development-pod",
+  "version": "1.0.0",
+  "name": "Development Pod",
+  "description": "Foundational delivery composition for planning, test-first implementation, challenge, and verification.",
+  "members": [
+    { "ref": "persona-atoms://personas/planner-tech-lead", "responsibility": "Decompose work and prepare delivery handoffs.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/executor-tdd-test-writer", "responsibility": "Write the failing test contract first.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/executor-coder", "responsibility": "Implement application code.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/executor-iac-coder", "responsibility": "Implement infrastructure changes when needed.", "cardinality": "0..1", "required": false },
+    { "ref": "persona-atoms://personas/reviewer-adversarial-test-writer", "responsibility": "Challenge the implementation and tests for gaps and gaming.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/reviewer-test-verifier", "responsibility": "Verify the implementation against the contract.", "cardinality": "1", "required": true }
+  ],
+  "entry_conditions": ["Scoped work item exists", "Required repository context is available"],
+  "workflow": [
+    "Planner tech lead defines plan and acceptance shape.",
+    "TDD test writer produces failing behavioral contract.",
+    "Executor coder implements the change.",
+    "Optional IaC coder handles infrastructure scope when needed.",
+    "Adversarial test writer probes for weak or gamed tests.",
+    "Test verifier emits the final implementation verification state."
+  ],
+  "handoff_rules": [
+    "Planning hands off to TDD before implementation begins.",
+    "Implementation hands off to reviewers before the pod is considered complete."
+  ],
+  "output_artifacts": ["implementation changes", "test contract", "verification report"],
+  "rework_routing": ["Verification failure routes back to executor personas through the pod."],
+  "done_criteria": ["Implementation exists", "Tests and verification are complete", "Pod output is ready for team-level review panels"],
+  "tags": ["development", "pod", "foundation"],
+  "vendors": ["claude", "gpt", "any"],
+  "lifecycle": "draft",
+  "license": "Apache-2.0",
+  "provenance": { "source": "convergent-systems-co", "addedBy": "persona-taxonomy-integration", "addedAt": "2026-06-15T00:00:00Z" }
+}
