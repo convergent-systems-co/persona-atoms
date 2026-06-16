@@ -1,0 +1,26 @@
+{
+  "schema": "https://persona-atoms.com/schemas/composition-group-v1.json",
+  "type": "panel",
+  "id": "documentation-review-panel",
+  "version": "1.0.0",
+  "name": "Documentation Review Panel",
+  "description": "Reviews documentation readiness and emits an aggregate panel state through a moderator.",
+  "members": [
+    { "ref": "persona-atoms://personas/reviewer-documentation", "responsibility": "Produce documentation findings.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://personas/moderator-review-panel", "responsibility": "Aggregate reviewer state without injecting content judgment.", "cardinality": "1", "required": true }
+  ],
+  "entry_conditions": ["Documentation artifacts exist or are required by the delivery"],
+  "workflow": [
+    "Documentation reviewer evaluates artifacts and emits findings.",
+    "Moderator determines whether the panel is complete and what aggregate state it should emit."
+  ],
+  "moderation_rule": "The moderator may emit approve, conditional, or block at the panel-state level only. It must not originate documentation findings.",
+  "output_artifacts": ["documentation review findings", "documentation panel state"],
+  "rework_routing": ["Documentation blocks route back to the originating pod or document writer."],
+  "done_criteria": ["Documentation findings are present", "Panel state is explicit"],
+  "tags": ["review", "documentation", "panel"],
+  "vendors": ["claude", "gpt", "any"],
+  "lifecycle": "draft",
+  "license": "Apache-2.0",
+  "provenance": { "source": "convergent-systems-co", "addedBy": "persona-taxonomy-integration", "addedAt": "2026-06-15T00:00:00Z" }
+}

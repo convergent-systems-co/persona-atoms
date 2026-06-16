@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/composition-v1.json",
+  "title": "persona-atoms v1 persona composition",
+  "description": "A persona composition assembles voice-profile + role-definition + behavioural-constraints + knowledge-boundaries + tone-parameters into a complete identity an agent can assume. Optional work-contract binding adds operational semantics without replacing the role-definition identity anchor. Every composition must satisfy the prompt-conformance rule: it must be renderable to a deterministic system-prompt string from the bound atoms alone.",
+  "type": "object",
+  "required": [
+    "schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "role_definition",
+    "voice_profile",
+    "knowledge_boundaries",
+    "tone_parameters"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/composition-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "persona"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the personas/ directory."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "role_definition": {
+      "$ref": "#/$defs/atom-ref",
+      "description": "Reference to the role-definition atom that anchors this persona's purpose."
+    },
+    "voice_profile": {
+      "$ref": "#/$defs/atom-ref",
+      "description": "Reference to the voice-profile atom governing surface-form characteristics."
+    },
+    "behavioural_constraints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/atom-ref" },
+      "uniqueItems": true,
+      "description": "Zero or more behavioural-constraint atoms. The persona obeys all of them unconditionally."
+    },
+    "knowledge_boundaries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/atom-ref" },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "One or more knowledge-boundary atoms. Every persona MUST declare at least one (boundary-coverage rule)."
+    },
+    "tone_parameters": {
+      "$ref": "#/$defs/atom-ref",
+      "description": "Reference to the tone-parameter atom setting this persona's affective profile."
+    },
+    "work_contract": {
+      "$ref": "#/$defs/atom-ref",
+      "description": "Optional reference to a work-contract atom defining how this persona participates in a workflow."
+    },
+    "class": {
+      "type": "string",
+      "enum": ["planner", "executor", "reviewer", "moderator", "coordinator", "aggregator"],
+      "description": "Optional class metadata for workflow-aware runtimes."
+    },
+    "domain": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Optional domain metadata for workflow-aware runtimes."
+    },
+    "extends_brand": {
+      "$ref": "#/$defs/external-ref",
+      "description": "Optional reference to a brand-atoms brand for voice continuity. When present, the persona's voice inherits the brand's guidelines."
+    },
+    "system_prompt_template": {
+      "type": "string",
+      "maxLength": 4000,
+      "description": "Optional: an explicit Mustache-style template used during rendering to assemble the system prompt from the bound atoms. If absent, the runtime uses its default rendering algorithm."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true,
+      "description": "LLM families this persona is known to work well with."
+    },
+    "lifecycle": {
+      "type": "string",
+      "enum": ["draft", "stable", "deprecated", "archived"],
+      "default": "draft"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "$defs": {
+    "atom-ref": {
+      "type": "object",
+      "required": ["ref", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^persona-atoms://atoms/[a-z-]+/[a-z0-9-]+$",
+          "description": "Canonical atom URI. Format: persona-atoms://atoms/<type>/<id>"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$",
+          "description": "Version of the referenced atom at composition time."
+        }
+      }
+    },
+    "external-ref": {
+      "type": "object",
+      "required": ["ref", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "type": "string",
+          "pattern": "^[a-z-]+-atoms://[a-z-]+/[a-z0-9/-]+$",
+          "description": "Cross-catalog reference URI. Format: <catalog>-atoms://<type>/<path>"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+        }
+      }
+    }
+  }
+}

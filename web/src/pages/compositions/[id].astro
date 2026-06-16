@@ -1,0 +1,67 @@
+---
+import Base from "../../layouts/Base.astro";
+import catalog from "../../../public/exports/catalog.json";
+
+export function getStaticPaths() {
+  return catalog.compositions.map((composition: any) => ({
+    params: { id: composition.id },
+    props: { composition },
+  }));
+}
+
+const { composition } = Astro.props;
+---
+<Base title={composition.name} description={composition.description}>
+  <p><a href="/compositions/">← All compositions</a></p>
+  <h1>{composition.name}</h1>
+  <p style="color: var(--muted);">
+    <code>{composition.type}</code> · <code>v{composition.version}</code>
+  </p>
+
+  {composition.description && <p>{composition.description}</p>}
+
+  {composition.members && composition.members.length > 0 && (
+    <section>
+      <h2>Members</h2>
+      <ul>
+        {composition.members.map((member: any) => (
+          <li>
+            <code>{member.ref}</code> — {member.responsibility} ({member.cardinality})
+            {member.required === false ? " optional" : ""}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {composition.entry_conditions && composition.entry_conditions.length > 0 && (
+    <section>
+      <h2>Entry conditions</h2>
+      <ul>{composition.entry_conditions.map((item: string) => <li>{item}</li>)}</ul>
+    </section>
+  )}
+
+  {composition.workflow && composition.workflow.length > 0 && (
+    <section>
+      <h2>Workflow</h2>
+      <ol>{composition.workflow.map((item: string) => <li>{item}</li>)}</ol>
+    </section>
+  )}
+
+  {composition.moderation_rule && (
+    <section>
+      <h2>Moderation rule</h2>
+      <p>{composition.moderation_rule}</p>
+    </section>
+  )}
+
+  {composition.done_criteria && composition.done_criteria.length > 0 && (
+    <section>
+      <h2>Done criteria</h2>
+      <ul>{composition.done_criteria.map((item: string) => <li>{item}</li>)}</ul>
+    </section>
+  )}
+
+  <h2>Raw composition</h2>
+  <p><a href={`/compositions/${composition.id}/atom.json`}>/compositions/{composition.id}/atom.json</a> · <a href="/schemas/composition-group-v1.json">schema</a></p>
+</Base>

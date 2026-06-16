@@ -10,13 +10,12 @@ export function getStaticPaths() {
 }
 
 const { atom } = Astro.props;
-
-// Pick type-specific payload fields
-const voiceProfile = atom.voice_profile;
-const roleDefinition = atom.role_definition;
-const behaviouralConstraint = atom.behavioural_constraint;
-const knowledgeBoundary = atom.knowledge_boundary;
-const toneParameter = atom.tone_parameter;
+const isVoiceProfile = atom.type === "voice-profile";
+const isRoleDefinition = atom.type === "role-definition";
+const isBehaviouralConstraint = atom.type === "behavioural-constraint";
+const isKnowledgeBoundary = atom.type === "knowledge-boundary";
+const isToneParameter = atom.type === "tone-parameter";
+const isWorkContract = atom.type === "work-contract";
 ---
 <Base title={atom.name} description={atom.description ?? `${atom.type} atom`}>
   <p><a href="/atoms/">← All atoms</a></p>
@@ -35,77 +34,94 @@ const toneParameter = atom.tone_parameter;
     </p>
   )}
 
-  {voiceProfile && (
+  {isVoiceProfile && (
     <section>
       <h2>Voice profile</h2>
       <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
-        {voiceProfile.tone && (<><dt>Tone</dt><dd>{voiceProfile.tone}</dd></>)}
-        {voiceProfile.formality && (<><dt>Formality</dt><dd><code>{voiceProfile.formality}</code></dd></>)}
-        {voiceProfile.register && (<><dt>Register</dt><dd><code>{voiceProfile.register}</code></dd></>)}
-        {voiceProfile.style && (<><dt>Style</dt><dd>{voiceProfile.style}</dd></>)}
-        {voiceProfile.characteristics && voiceProfile.characteristics.length > 0 && (
-          <><dt>Characteristics</dt><dd>{voiceProfile.characteristics.join(", ")}</dd></>
+        {atom.formality && (<><dt>Formality</dt><dd><code>{atom.formality}</code></dd></>)}
+        {atom.hedging_tolerance && (<><dt>Hedging tolerance</dt><dd><code>{atom.hedging_tolerance}</code></dd></>)}
+        {atom.sentence_length_preference && (<><dt>Sentence length</dt><dd><code>{atom.sentence_length_preference}</code></dd></>)}
+        {atom.vocabulary_domain && atom.vocabulary_domain.length > 0 && (
+          <><dt>Vocabulary</dt><dd>{atom.vocabulary_domain.join(", ")}</dd></>
         )}
+        {atom.avoids && atom.avoids.length > 0 && (<><dt>Avoids</dt><dd>{atom.avoids.join(", ")}</dd></>)}
       </dl>
     </section>
   )}
 
-  {roleDefinition && (
+  {isRoleDefinition && (
     <section>
       <h2>Role definition</h2>
       <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
-        {roleDefinition.role && (<><dt>Role</dt><dd>{roleDefinition.role}</dd></>)}
-        {roleDefinition.purpose && (<><dt>Purpose</dt><dd>{roleDefinition.purpose}</dd></>)}
-        {roleDefinition.authority && (<><dt>Authority</dt><dd><code>{roleDefinition.authority}</code></dd></>)}
-        {roleDefinition.expertise && roleDefinition.expertise.length > 0 && (
-          <><dt>Expertise</dt><dd>{roleDefinition.expertise.join(", ")}</dd></>
-        )}
+        {atom.job_to_be_done && (<><dt>Job to be done</dt><dd>{atom.job_to_be_done}</dd></>)}
+        {atom.domain && (<><dt>Domain</dt><dd><code>{atom.domain}</code></dd></>)}
       </dl>
+      {atom.primary_tasks && atom.primary_tasks.length > 0 && (
+        <>
+          <h3>Primary tasks</h3>
+          <ul>{atom.primary_tasks.map((task: string) => <li>{task}</li>)}</ul>
+        </>
+      )}
+      {atom.out_of_scope && atom.out_of_scope.length > 0 && (
+        <>
+          <h3>Out of scope</h3>
+          <ul>{atom.out_of_scope.map((task: string) => <li>{task}</li>)}</ul>
+        </>
+      )}
     </section>
   )}
 
-  {behaviouralConstraint && (
+  {isBehaviouralConstraint && (
     <section>
       <h2>Behavioural constraint</h2>
-      {behaviouralConstraint.refusals && behaviouralConstraint.refusals.length > 0 && (
-        <>
-          <h3>Refusals</h3>
-          <ul>{behaviouralConstraint.refusals.map((r: string) => <li>{r}</li>)}</ul>
-        </>
-      )}
-      {behaviouralConstraint.requirements && behaviouralConstraint.requirements.length > 0 && (
-        <>
-          <h3>Requirements</h3>
-          <ul>{behaviouralConstraint.requirements.map((r: string) => <li>{r}</li>)}</ul>
-        </>
-      )}
-      {behaviouralConstraint.escalate_to && <p>Escalate to: <code>{behaviouralConstraint.escalate_to}</code></p>}
+      <p>{atom.constraint_text}</p>
+      <p>Effect: <code>{atom.effect}</code></p>
+      {atom.rationale && <p>{atom.rationale}</p>}
     </section>
   )}
 
-  {knowledgeBoundary && (
+  {isKnowledgeBoundary && (
     <section>
       <h2>Knowledge boundary</h2>
+      <p>{atom.boundary_text}</p>
       <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
-        {knowledgeBoundary.domains && (<><dt>Domains</dt><dd>{knowledgeBoundary.domains.join(", ")}</dd></>)}
-        {knowledgeBoundary.excluded_domains && (<><dt>Excluded</dt><dd>{knowledgeBoundary.excluded_domains.join(", ")}</dd></>)}
-        {knowledgeBoundary.cutoff && (<><dt>Cutoff</dt><dd><code>{knowledgeBoundary.cutoff}</code></dd></>)}
+        {atom.boundary_type && (<><dt>Boundary type</dt><dd><code>{atom.boundary_type}</code></dd></>)}
+        {atom.covered_domains && (<><dt>Covered</dt><dd>{atom.covered_domains.join(", ")}</dd></>)}
+        {atom.excluded_domains && (<><dt>Excluded</dt><dd>{atom.excluded_domains.join(", ")}</dd></>)}
+        {atom.cutoff_date && (<><dt>Cutoff</dt><dd><code>{atom.cutoff_date}</code></dd></>)}
       </dl>
     </section>
   )}
 
-  {toneParameter && (
+  {isToneParameter && (
     <section>
       <h2>Tone parameter</h2>
       <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
-        {toneParameter.warmth !== undefined && (<><dt>Warmth</dt><dd>{toneParameter.warmth}</dd></>)}
-        {toneParameter.directness !== undefined && (<><dt>Directness</dt><dd>{toneParameter.directness}</dd></>)}
-        {toneParameter.humour !== undefined && (<><dt>Humour</dt><dd>{toneParameter.humour}</dd></>)}
-        {toneParameter.formality !== undefined && (<><dt>Formality</dt><dd>{toneParameter.formality}</dd></>)}
+        {atom.warmth !== undefined && (<><dt>Warmth</dt><dd>{atom.warmth}</dd></>)}
+        {atom.directness !== undefined && (<><dt>Directness</dt><dd>{atom.directness}</dd></>)}
+        {atom.humour !== undefined && (<><dt>Humour</dt><dd>{atom.humour}</dd></>)}
+        {atom.empathy_depth !== undefined && (<><dt>Empathy depth</dt><dd>{atom.empathy_depth}</dd></>)}
+        {atom.formality_override !== undefined && (<><dt>Formality override</dt><dd>{atom.formality_override}</dd></>)}
       </dl>
+    </section>
+  )}
+
+  {isWorkContract && (
+    <section>
+      <h2>Work contract</h2>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem;">
+        <dt>Class</dt><dd><code>{atom.class}</code></dd>
+        <dt>Goal</dt><dd>{atom.goal}</dd>
+        {atom.decision_scope && (<><dt>Decision scope</dt><dd><code>{atom.decision_scope}</code></dd></>)}
+      </dl>
+      {atom.inputs && (<><h3>Inputs</h3><ul>{atom.inputs.map((item: string) => <li>{item}</li>)}</ul></>)}
+      {atom.allowed_actions && (<><h3>Allowed actions</h3><ul>{atom.allowed_actions.map((item: string) => <li>{item}</li>)}</ul></>)}
+      {atom.forbidden_actions && (<><h3>Forbidden actions</h3><ul>{atom.forbidden_actions.map((item: string) => <li>{item}</li>)}</ul></>)}
+      {atom.output_artifacts && (<><h3>Output artifacts</h3><ul>{atom.output_artifacts.map((item: string) => <li>{item}</li>)}</ul></>)}
+      {atom.done_criteria && (<><h3>Done criteria</h3><ul>{atom.done_criteria.map((item: string) => <li>{item}</li>)}</ul></>)}
     </section>
   )}
 
   <h2>Raw atom</h2>
-  <p><a href={`/atoms/${atom.type}/${atom.id}.json`}>/atoms/{atom.type}/{atom.id}.json</a> · <a href="/schemas/atom-v1.json">schema</a></p>
+  <p><a href={`/atoms/${atom.type}/${atom.id}.json`}>/atoms/{atom.type}/{atom.id}.json</a></p>
 </Base>

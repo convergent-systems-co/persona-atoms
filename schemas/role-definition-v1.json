@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/role-definition-v1.json",
+  "title": "persona-atoms v1 role-definition atom",
+  "description": "Defines the job-to-be-done for a persona: what the persona is for, what tasks it handles, and what it explicitly does not do. Role-definition is the anchor of a persona's identity — voice, tone, and constraints qualify the role, but the role is the purpose.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "job_to_be_done"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/role-definition-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "role-definition"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$",
+      "description": "URL-safe slug; unique within the role-definition atom type."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "job_to_be_done": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500,
+      "description": "One-paragraph statement of what this role exists to accomplish."
+    },
+    "primary_tasks": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "description": "Enumerated tasks this role handles well."
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "description": "Tasks explicitly outside this role's purpose. Declaring out-of-scope is how a persona signals 'ask someone else.'"
+    },
+    "domain": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Broad domain this role operates in (e.g. 'software-engineering', 'customer-service', 'research')."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+---
+import Base from "../../layouts/Base.astro";
+import catalog from "../../../public/exports/catalog.json";
+
+const compositions = catalog.compositions.slice().sort((a: any, b: any) => a.id.localeCompare(b.id));
+---
+<Base title="Compositions" description="Panels, pods, and teams built from personas and nested compositions.">
+  <h1>Compositions</h1>
+  <p>{compositions.length} higher-order composition{compositions.length === 1 ? "" : "s"} — reusable panels, pods, and teams.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: 1rem; margin-top: 2rem;">
+    {compositions.map((c: any) => (
+      <article style="border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: var(--card);">
+        <header style="margin-bottom: 0.5rem;">
+          <h3 style="margin: 0;"><a href={`/compositions/${c.id}/`}>{c.name}</a></h3>
+          <code style="color: var(--muted); font-size: 0.75rem;">{c.type} · v{c.version}</code>
+        </header>
+        {c.description && <p style="margin: 0.5rem 0; color: var(--muted);">{c.description}</p>}
+      </article>
+    ))}
+    {compositions.length === 0 && (
+      <p style="color: var(--muted);">No higher-order compositions yet — seeding in progress.</p>
+    )}
+  </div>
+</Base>

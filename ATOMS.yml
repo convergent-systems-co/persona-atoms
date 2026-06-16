@@ -9,15 +9,24 @@ version: 0.1.0
 canonical_domain: persona-atoms.com
 federation: convergent-systems.co
 description: |
-  Persona primitives for AI agents and LLMs — voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters. Composable persona designs that runtimes bind to agents, system prompts, and conversational surfaces.
+  Persona primitives for AI agents and LLMs — voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters, and work contracts. Composable persona and team designs that runtimes bind to agents, panels, pods, and delivery workflows.
 atom_types:
   - voice-profile
   - role-definition
   - behavioural-constraint
   - knowledge-boundary
   - tone-parameter
+  - work-contract
 composition_type: personas
 composition_dir: personas
+composition_dirs:
+  - personas
+  - compositions
+composition_kinds:
+  - persona
+  - panel
+  - pod
+  - team
 runtime_consumers:
   - aish
   - olympus

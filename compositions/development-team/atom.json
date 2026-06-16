@@ -1,0 +1,37 @@
+{
+  "schema": "https://persona-atoms.com/schemas/composition-group-v1.json",
+  "type": "team",
+  "id": "development-team",
+  "version": "1.0.0",
+  "name": "Development Team",
+  "description": "Foundational delivery team composition made of a coordinator, one or more development pods, shared review panels, and optional evidence aggregation.",
+  "members": [
+    { "ref": "persona-atoms://personas/coordinator-devops-engineer", "responsibility": "Route work across pods and panels.", "cardinality": "1", "required": true },
+    { "ref": "persona-atoms://compositions/development-pod", "responsibility": "Deliver bounded workstreams.", "cardinality": "1..N", "required": true },
+    { "ref": "persona-atoms://personas/executor-document-writer", "responsibility": "Produce required documentation updates.", "cardinality": "0..1", "required": false },
+    { "ref": "persona-atoms://compositions/documentation-review-panel", "responsibility": "Emit documentation panel state.", "cardinality": "0..1", "required": false },
+    { "ref": "persona-atoms://compositions/security-review-panel", "responsibility": "Emit security panel state.", "cardinality": "0..1", "required": false },
+    { "ref": "persona-atoms://compositions/architecture-review-panel", "responsibility": "Emit architecture panel state.", "cardinality": "0..1", "required": false },
+    { "ref": "persona-atoms://personas/aggregator-delivery-evidence", "responsibility": "Assemble delivery evidence when required.", "cardinality": "0..1", "required": false }
+  ],
+  "entry_conditions": ["Prioritized work queue exists", "At least one development pod can accept work"],
+  "workflow": [
+    "Coordinator assigns work to one or more development pods.",
+    "Pods execute planning, testing, implementation, challenge, and verification.",
+    "Shared review panels run when their trigger conditions are met.",
+    "Optional evidence aggregation assembles final artifacts for handoff or audit.",
+    "Coordinator reconciles panel outcomes and routes completion or rework."
+  ],
+  "handoff_rules": [
+    "Pods finish before team-level review states can be considered complete.",
+    "Panel blocks route back to the originating pod through the coordinator."
+  ],
+  "output_artifacts": ["delivery-ready change set", "team-level panel states", "optional evidence bundle"],
+  "rework_routing": ["Coordinator routes failed panel outcomes back to the appropriate pod or document writer."],
+  "done_criteria": ["Required pods have completed", "Required panels have emitted explicit states", "Coordinator has emitted a final team workflow state"],
+  "tags": ["development", "team", "foundation"],
+  "vendors": ["claude", "gpt", "any"],
+  "lifecycle": "draft",
+  "license": "Apache-2.0",
+  "provenance": { "source": "convergent-systems-co", "addedBy": "persona-taxonomy-integration", "addedAt": "2026-06-15T00:00:00Z" }
+}

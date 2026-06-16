@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/rule-v1.json",
+  "title": "persona-atoms v1 rule",
+  "description": "A rule constrains how persona atoms and compositions can be combined. Three rule types are defined for v0.1: prompt-conformance (every persona renders deterministically), boundary-coverage (every persona declares at least one knowledge-boundary), and voice-consistency (voice-profile and tone-parameter MUST NOT contradict).",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "predicate",
+    "effect"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/rule-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["prompt-conformance", "boundary-coverage", "voice-consistency"],
+      "description": "prompt-conformance = every persona MUST render to a deterministic system-prompt string. boundary-coverage = every persona MUST declare at least one knowledge-boundary atom. voice-consistency = voice-profile and tone-parameter MUST NOT contradict."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "predicate": {
+      "type": "object",
+      "required": ["subject_ref", "condition", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "subject_ref": {
+          "type": "string",
+          "pattern": "^persona-atoms://(atoms|personas|rules)/[a-z-]+(?:/[a-z0-9-]+)?$",
+          "description": "The atom, persona, or rule this predicate applies to."
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["eq", "neq", "in", "not_in", "gte", "lte", "matches", "has_min_count", "not_contradicts"],
+          "description": "has_min_count: numeric count check on an array field. not_contradicts: checks that two fields are logically compatible."
+        },
+        "value": {}
+      }
+    },
+    "effect": {
+      "type": "string",
+      "enum": ["require", "forbid", "warn"],
+      "description": "require = the condition must hold; forbid = the condition must not hold; warn = surface a warning when the condition holds."
+    },
+    "rationale": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Why this rule exists."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier.",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
