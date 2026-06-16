@@ -3,28 +3,41 @@ import Base from "../../layouts/Base.astro";
 import catalog from "../../../public/exports/catalog.json";
 
 export function getStaticPaths() {
-  return catalog.compositions.map((composition: any) => ({
+  return catalog.personas.map((composition: any) => ({
     params: { id: composition.id },
     props: { composition },
   }));
 }
 
 const { composition } = Astro.props;
-const refs = composition.references ?? {};
+const refs = {
+  role_definition: composition.role_definition,
+  voice_profile: composition.voice_profile,
+  tone_parameters: composition.tone_parameters,
+  work_contract: composition.work_contract,
+  behavioural_constraints: composition.behavioural_constraints ?? [],
+  knowledge_boundaries: composition.knowledge_boundaries ?? [],
+};
+const refEntries = Object.entries(refs).filter(([, val]) =>
+  Array.isArray(val) ? val.length > 0 : Boolean(val)
+);
 ---
 <Base title={composition.name} description={composition.description}>
   <p><a href="/personas/">← All personas</a></p>
   <h1>{composition.name}</h1>
   <p style="color: var(--muted);">
-    <code>persona</code> · <code>v{composition.version}</code>
+    <code>persona</code>
+    {composition.class && <> · <code>{composition.class}</code></>}
+    {composition.domain && <> · <code>{composition.domain}</code></>}
+    · <code>v{composition.version}</code>
   </p>
 
   {composition.description && <p>{composition.description}</p>}
 
-  {Object.keys(refs).length > 0 && (
+  {refEntries.length > 0 && (
     <section>
       <h2>References</h2>
-      {Object.entries(refs).map(([key, val]: [string, any]) => {
+      {refEntries.map(([key, val]: [string, any]) => {
         const values: any[] = Array.isArray(val) ? val : [val];
         return (
           <div style="margin-bottom: 1.5rem;">
@@ -43,5 +56,5 @@ const refs = composition.references ?? {};
   )}
 
   <h2>Raw composition</h2>
-  <p><a href={`/personas/${composition.id}.json`}>/personas/{composition.id}.json</a> · <a href="/schemas/composition-v1.json">schema</a></p>
+  <p><a href={`/personas/${composition.id}/atom.json`}>/personas/{composition.id}/atom.json</a> · <a href="/schemas/composition-v1.json">schema</a></p>
 </Base>

@@ -30,7 +30,9 @@ REQUIRED_SCHEMAS = [
     "behavioural-constraint-v1.json",
     "knowledge-boundary-v1.json",
     "tone-parameter-v1.json",
+    "work-contract-v1.json",
     "composition-v1.json",
+    "composition-group-v1.json",
     "rule-v1.json",
 ]
 

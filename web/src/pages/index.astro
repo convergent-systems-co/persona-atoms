@@ -1,8 +1,13 @@
 ---
 import catalog from "../../public/exports/catalog.json";
 const title = "persona-atoms";
-const tagline = "Voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters for AI personas.";
-const counts = { atoms: catalog.atoms.length, compositions: catalog.compositions.length, rules: catalog.rules.length };
+const tagline = "Voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters, and work contracts for AI personas, panels, pods, and teams.";
+const counts = {
+  atoms: catalog.atoms.length,
+  personas: catalog.personas.length,
+  compositions: catalog.compositions.length,
+  rules: catalog.rules.length,
+};
 const byType: Record<string, number> = {};
 for (const a of (catalog.atoms as Array<{type: string}>)) byType[a.type] = (byType[a.type] ?? 0) + 1;
 ---
@@ -27,11 +32,12 @@ for (const a of (catalog.atoms as Array<{type: string}>)) byType[a.type] = (byTy
           <h1>{title}</h1>
           <p class="lede">{tagline}</p>
         </section>
-        <p style="font-size:1.125rem;color:var(--muted);max-width:40rem;">Composable persona primitives portable across LangChain, AutoGen, CrewAI, Olympus, and any future agent runtime. Voice profiles, role definitions, behavioural constraints, knowledge boundaries, and tone parameters — assembled into full personas any system prompt can bind.</p>
+        <p style="font-size:1.125rem;color:var(--muted);max-width:40rem;">Composable persona primitives portable across LangChain, AutoGen, CrewAI, Olympus, and any future agent runtime. Voice profiles, role definitions, behavioural constraints, knowledge boundaries, tone parameters, and work contracts — assembled into personas, panels, pods, and teams.</p>
         <h2>Catalog at v{catalog.version}</h2>
         <ul>
           <li><strong>{counts.atoms}</strong> atoms across {Object.keys(byType).length} types</li>
-          <li><strong>{counts.compositions}</strong> persona compositions</li>
+          <li><strong>{counts.personas}</strong> persona compositions</li>
+          <li><strong>{counts.compositions}</strong> higher-order compositions</li>
           <li><strong>{counts.rules}</strong> compatibility rules</li>
         </ul>
         <h2>Atom types</h2>
@@ -40,8 +46,13 @@ for (const a of (catalog.atoms as Array<{type: string}>)) byType[a.type] = (byTy
             <li><a href={`/atoms/?type=${type}`}>{type}</a> — {n} atoms</li>
           ))}
           {Object.keys(byType).length === 0 && (
-            <li style="color:var(--muted)">Seeding in progress — voice-profile, role-definition, behavioural-constraint, knowledge-boundary, tone-parameter</li>
+            <li style="color:var(--muted)">Seeding in progress — voice-profile, role-definition, behavioural-constraint, knowledge-boundary, tone-parameter, work-contract</li>
           )}
+        </ul>
+        <h2>Composition kinds</h2>
+        <ul>
+          <li><a href="/personas/">Personas</a> — single-agent identities composed from atoms.</li>
+          <li><a href="/compositions/">Compositions</a> — panels, pods, and teams built from personas and nested compositions.</li>
         </ul>
         <h2>Civilization-grade properties</h2>
         <ul>

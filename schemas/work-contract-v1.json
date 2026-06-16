@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://persona-atoms.com/schemas/work-contract-v1.json",
+  "title": "persona-atoms v1 work-contract atom",
+  "description": "Defines how a persona participates in work: what it takes in, what it may do, what it must never do, what it produces, and when it escalates. Work-contract separates operational behavior from role identity.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "type",
+    "id",
+    "version",
+    "name",
+    "class",
+    "goal",
+    "inputs",
+    "allowed_actions",
+    "forbidden_actions",
+    "output_artifacts",
+    "done_criteria"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://persona-atoms.com/schemas/work-contract-v1.json"
+    },
+    "type": {
+      "type": "string",
+      "const": "work-contract"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "class": {
+      "type": "string",
+      "enum": ["planner", "executor", "reviewer", "moderator", "coordinator", "aggregator"]
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "allowed_actions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "forbidden_actions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "output_artifacts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "handoff_targets": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 120 },
+      "uniqueItems": true
+    },
+    "escalation_triggers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "uniqueItems": true
+    },
+    "done_criteria": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "decision_scope": {
+      "type": "string",
+      "enum": ["none", "planning", "content", "panel-state", "workflow-routing"],
+      "default": "none"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "vendors": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["claude", "gpt", "llama", "gemini", "mistral", "any"] },
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "default": "Apache-2.0"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "type": "string" },
+        "addedBy": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
