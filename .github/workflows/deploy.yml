@@ -42,6 +42,9 @@ jobs:
         working-directory: ./web
         run: npm run build
 
+      - name: Create Pages project (idempotent)
+        run: npx --yes wrangler@latest pages project create persona-atoms --production-branch=main 2>&1 || true
+
       - name: Deploy to Cloudflare Pages
         working-directory: ./web
         run: npx --yes wrangler@latest pages deploy dist --project-name persona-atoms --branch main
